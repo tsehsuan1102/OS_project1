@@ -77,29 +77,31 @@ int run_process(PROCESS *now)
         fprintf(stdout, "%s %d\n", now->name, getpid());
 
 
-        long long   start_sec, start_nsec, end_sec, end_nsec;
+        long    start, end;
         struct  timeval    tv;
         struct  timezone   tz;
 
         char dmesg[200];
-        // syscall(GET_TIME, &start_sec, &start_nsec);        
-        gettimeofday(&tv, &tz);
-        start_sec = tv.tv_sec;
-        start_nsec = tv.tv_usec;
+        start = syscall(GETTIME);
+
+        // gettimeofday(&tv, &tz);
+        // start_sec = tv.tv_sec;
+        // start_nsec = tv.tv_usec;
 
         for (int i=0;i<now->exec_time;i++) {
             //execute process
             UNIT_TIME();
         }
 
-        gettimeofday(&tv, &tz);
-        end_sec = tv.tv_sec;
-        end_nsec = tv.tv_usec;
-        // syscall(GET_TIME, &end_sec, &end_nsec);
-        sprintf(dmesg, "[project1]%s %d %lld.%09lld %lld.%09lld\n", now->name, getpid(), start_sec, start_nsec, end_sec, end_nsec);
+        // gettimeofday(&tv, &tz);
+        // end_sec = tv.tv_sec;
+        // end_nsec = tv.tv_usec;
+        end = syscall(GETTIME);
 
-        
-        // syscall(PRINTK, to_dmesg);
+
+        // sprintf(dmesg, "[project1]%s %d %lld.%09lld %lld.%09lld\n", now->name, getpid(), start_sec, start_nsec, end_sec, end_nsec);
+        syscall(PRINTK, getpid(), strat, end);
+
         fprintf(stderr, "%s\n", dmesg);
         exit(0);
     }
