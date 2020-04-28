@@ -1,5 +1,5 @@
-#ifndef _SCHEDULING_H_
-#define _SCHEDULING_H_
+#ifndef _SCHEDULE_H_
+#define _SCHEDULE_H_
 
 #include "process.h"
 
@@ -12,7 +12,7 @@
 //int next_process(struct process *proc, int nproc, int policy);
 
 //my schedule
-int scheduling(PROCESS *proc, int n_process, int policy);
+int scheduling(PROCESS **process_list, int n_process, int policy);
 
 
 

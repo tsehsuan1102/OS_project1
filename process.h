@@ -7,7 +7,7 @@
 #define CHILD_CPU   1
 
 //Unit time
-#define UNIT_T(){ for(int i=0;i<1000000;i++);}
+#define UNIT_TIME() { volatile unsigned long i; for(i=0;i<1000000UL;i++); } 
 
 
 typedef struct{
@@ -19,23 +19,20 @@ typedef struct{
 
 
 
-void read_process(PROCESS *p);
+void    read_process(PROCESS *p);
 
-void print_process(PROCESS *p);
+void    print_process(PROCESS *p);
 
+// Assign process to specific core
+int     assign_proc_on_cpu(int pid, int core);
 
+//run process
+int     run_process(PROCESS *now);
 
+//High priority
+int     set_process_high(int pid);
 
-// /* Assign process to specific core */
-// int proc_assign_cpu(int pid, int core);
-
-// /* Execute the process and return pid */
-// int proc_exec(struct process proc);
-
-// /* Set very low priority tp process */
-// int proc_block(int pid);
-
-// /* Set high priority to process */
-// int proc_wakeup(int pid);
+//set low priority
+int     set_process_block(int pid);
 
 #endif

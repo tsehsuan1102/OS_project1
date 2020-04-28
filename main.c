@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include <sched.h>
@@ -14,7 +15,8 @@
 
 // #include "header.h"
 #include "process.h"
-#include "schdule.h"
+#include "schedule.h"
+
 
 
 int check_type(char *str1)
@@ -39,20 +41,27 @@ int main()
     int     n_process;
     scanf("%d", &n_process);
 
-    PROCESS *process_list = (PROCESS*)malloc(n_process*sizeof(PROCESS));
+    PROCESS *processes = (PROCESS*)malloc(n_process*sizeof(PROCESS));    
+    PROCESS **process_list = (PROCESS**)malloc(n_process*sizeof(PROCESS*));
+    for(int i=0;i<n_process;i++)
+        process_list[i] = &processes[i];
+
     for(int i=0;i<n_process;i++){
-        read_process(&process_list[i]);
+        // print_process(process_list[i]);
+        read_process(process_list[i]);
+        // print_process(process_list[i]);
     }
+    fprintf(stderr, "Read Complete!\n");
     // for(int i=0;i<n_process;i++){
     //     print_process(&process_que[i]);
     // }
     
-
-
+    fprintf(stderr, "Start schedule!\n");
     scheduling(process_list, n_process, type);
-    
-    
-    
+
+
+
+
 }
 
 
