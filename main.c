@@ -35,7 +35,7 @@ int main()
     char scheduling_policy[10];
     scanf("%s", scheduling_policy);
     int     type = check_type(scheduling_policy);
-    printf("### scheduling type = [%d]\n", type);
+    // printf("### scheduling type = [%d]\n", type);
     // USE_CPU(getpid(), 0);
     // SET_PRIORITY(getpid(), SCHED_FIFO, 0);
     int     n_process;
@@ -51,13 +51,13 @@ int main()
         read_process(process_list[i]);
         // print_process(process_list[i]);
     }
-    fprintf(stderr, "#### Read Complete!\n");
+    // fprintf(stderr, "#### Read Complete!\n");
     
-    for(int i=0;i<n_process;i++){
-        print_process(process_list[i]);
-    }
+    // for(int i=0;i<n_process;i++){
+    //     print_process(process_list[i]);
+    // }
     
-    fprintf(stderr, "#### Start schedule!\n");
+    // fprintf(stderr, "#### Start schedule!\n");
     scheduling(process_list, n_process, type);
 
 

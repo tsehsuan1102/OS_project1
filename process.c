@@ -76,7 +76,6 @@ int run_process(PROCESS *now)
     if(pid==0){
         fprintf(stdout, "%s %d\n", now->name, getpid());
 
-
         long    start, end;
         struct  timeval    tv;
         struct  timezone   tz;
@@ -98,9 +97,8 @@ int run_process(PROCESS *now)
         // end_nsec = tv.tv_usec;
         end = syscall(GETTIME);
 
-
         // sprintf(dmesg, "[project1]%s %d %lld.%09lld %lld.%09lld\n", now->name, getpid(), start_sec, start_nsec, end_sec, end_nsec);
-        syscall(PRINTK, getpid(), strat, end);
+        syscall(PRINTK, getpid(), start, end);
 
         fprintf(stderr, "%s\n", dmesg);
         exit(0);

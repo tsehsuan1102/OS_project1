@@ -160,7 +160,7 @@ int scheduling(PROCESS **process_list, int n_process, int type)
             finished++;
             if( finished==n_process )
             {
-                fprintf(stderr, "all finished!\n");
+                // fprintf(stderr, "all finished!\n");
                 break;
             }
         }
