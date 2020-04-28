@@ -5,13 +5,17 @@
 
 #define PARENT_CPU  0
 #define CHILD_CPU   1
+#define GETTIME     333
+#define PRINTK      334
+
+
 
 //Unit time
 #define UNIT_TIME() { volatile unsigned long i; for(i=0;i<1000000UL;i++); } 
 
 
 typedef struct{
-    char    name[32];
+    char    name[50];
     int     ready_time;
     int     exec_time;
     pid_t   pid;

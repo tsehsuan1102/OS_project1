@@ -12,6 +12,7 @@
 
 
 
+
 void read_process(PROCESS *p){
     // printf("@@\n");
     //name, ready time, exec time
@@ -42,7 +43,7 @@ int assign_proc_on_cpu(pid_t pid, int core)
         perror("sched_setaffinity");
         exit(1);
     }
-    printf("[pid, core %d %d]\n", pid, core);
+    // printf("[pid, core %d %d]\n", pid, core);
     return 0;
 }
 
@@ -73,14 +74,15 @@ int run_process(PROCESS *now)
     }
     //children
     if(pid==0){
-        long long   start_sec, start_nsec, end_sec, end_nsec;
+        fprintf(stdout, "%s %d\n", now->name, getpid());
 
+
+        long long   start_sec, start_nsec, end_sec, end_nsec;
         struct  timeval    tv;
         struct  timezone   tz;
 
         char dmesg[200];
-        // syscall(GET_TIME, &start_sec, &start_nsec);
-        
+        // syscall(GET_TIME, &start_sec, &start_nsec);        
         gettimeofday(&tv, &tz);
         start_sec = tv.tv_sec;
         start_nsec = tv.tv_usec;
@@ -95,11 +97,12 @@ int run_process(PROCESS *now)
         end_nsec = tv.tv_usec;
         // syscall(GET_TIME, &end_sec, &end_nsec);
         sprintf(dmesg, "[project1]%s %d %lld.%09lld %lld.%09lld\n", now->name, getpid(), start_sec, start_nsec, end_sec, end_nsec);
+
+        
         // syscall(PRINTK, to_dmesg);
         fprintf(stderr, "%s\n", dmesg);
         exit(0);
     }
-    printf("cchild pid %d\n", pid);
     //parent
     //set children process on children CPU
     assign_proc_on_cpu(pid, CHILD_CPU);
