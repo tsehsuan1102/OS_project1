@@ -112,8 +112,16 @@ int run_process(PROCESS *now)
 //set low priority
 int set_process_block(pid_t pid)
 {
+    struct sched_param param;
+    param.sched_priority = 0;
 
-    return 1;
+    //SCHED_OTHER
+    int ret = sched_setscheduler(pid, SCHED_IDLE, &param);
+    if (ret < 0) {
+        perror("sched_setscheduler");
+        return -1;
+    }
+    return ret;
 }
 
 

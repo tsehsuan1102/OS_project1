@@ -181,7 +181,7 @@ int scheduling(PROCESS **process_list, int n_process, int type)
 // fprintf(stderr, "three\n");
         // get next process
         int next = next_process(process_list, n_process, type);
-        // printf("~next:%d~\n", next);
+        printf("~next:%d~\n", next);
         if(next!=-1) {
             //change work
             if(now_run_id != next){
