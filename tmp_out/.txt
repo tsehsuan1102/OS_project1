@@ -1,0 +1,44 @@
+sudo ./main
+pid 4919
+sched_setscheduler: Invalid argument
+P0 4920
+sched_setscheduler: Invalid argument
+sched_setscheduler: Invalid argument
+pid 4920
+P1 4921
+sched_setscheduler: Invalid argument
+sched_setscheduler: Invalid argument
+pid 4921
+P2 4922
+sched_setscheduler: Invalid argument
+sched_setscheduler: Invalid argument
+pid 4922
+P3 4923
+sched_setscheduler: Invalid argument
+sched_setscheduler: Invalid argument
+pid 4923
+P4 4924
+sched_setscheduler: Invalid argument
+sched_setscheduler: Invalid argument
+pid 4924
+P5 4925
+sched_setscheduler: Invalid argument
+sched_setscheduler: Invalid argument
+pid 4925
+P6 4926
+sched_setscheduler: Invalid argument
+sched_setscheduler: Invalid argument
+pid 4926
+P7 4927
+sched_setscheduler: Invalid argument
+sched_setscheduler: Invalid argument
+pid 4927
+P8 4928
+sched_setscheduler: Invalid argument
+sched_setscheduler: Invalid argument
+pid 4928
+P9 4929
+sched_setscheduler: Invalid argument
+sched_setscheduler: Invalid argument
+pid 4929
+make: *** No rule to make target '1'.  Stop.

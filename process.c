@@ -30,6 +30,7 @@ void print_process(PROCESS *p){
 
 int assign_proc_on_cpu(pid_t pid, int core)
 {
+	fprintf(stderr, "pid %d\n", pid);
     if(core > 2){
         fprintf(stderr, "Core index error.");
         return -1;
@@ -51,7 +52,7 @@ int assign_proc_on_cpu(pid_t pid, int core)
 int set_process_high(int pid)
 {
     struct sched_param param;
-    param.sched_priority = 0;
+    param.sched_priority = 99;
 
     //SCHED_OTHER
     int ret = sched_setscheduler(pid, SCHED_OTHER, &param);
@@ -66,7 +67,7 @@ int set_process_high(int pid)
 //run process
 int run_process(PROCESS *now)
 {
-    pid_t   pid = fork();
+    int   pid = fork();
 
     if(pid<0){
         perror("fork");
@@ -75,32 +76,23 @@ int run_process(PROCESS *now)
     //children
     if(pid==0){
         long    start, end;
-        struct  timeval    tv;
-        struct  timezone   tz;
-
 
 		while( sched_getcpu()!=CHILD_CPU );
 
         start = syscall(GETTIME);
-
-        // gettimeofday(&tv, &tz);
-        // start_sec = tv.tv_sec;
-        // start_nsec = tv.tv_usec;
-
         for (int i=0;i<now->exec_time;i++) {
             //execute process
-            UNIT_TIME();
+    		struct sched_param param;
+            //while(param.sched_priority == 1){
+			//	fprintf(stderr, "%d is halt...", pid);
+			//	continue;
+			//}
+			UNIT_TIME();
         }
-
-        // gettimeofday(&tv, &tz);
-        // end_sec = tv.tv_sec;
-        // end_nsec = tv.tv_usec;
         end = syscall(GETTIME);
+        
+		syscall(PRINTK, getpid(), start, end);
 
-        // sprintf(dmesg, "[project1]%s %d %lld.%09lld %lld.%09lld\n", now->name, getpid(), start_sec, start_nsec, end_sec, end_nsec);
-        syscall(PRINTK, getpid(), start, end);
-
-        //fprintf(stderr, "%s\n", dmesg);
         exit(0);
     }
     fprintf(stdout, "%s %d\n", now->name, pid);
@@ -113,10 +105,10 @@ int run_process(PROCESS *now)
 }
 
 //set low priority
-int set_process_block(pid_t pid)
+int set_process_block(int pid)
 {
     struct sched_param param;
-    param.sched_priority = 0;
+    param.sched_priority = 1;
 
     //SCHED_OTHER
     int ret = sched_setscheduler(pid, SCHED_IDLE, &param);

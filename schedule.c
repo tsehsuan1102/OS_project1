@@ -200,7 +200,7 @@ int scheduling(PROCESS **process_list, int n_process, int type)
 
     /* Set high priority to scheduler */
     set_process_high(scheduler_pid);
-    // printf("%d set done", scheduler_pid);
+    //printf("%d set done", scheduler_pid);
 
     //FIFO, sort at first
     if(type==FIFO){
@@ -212,20 +212,20 @@ int scheduling(PROCESS **process_list, int n_process, int type)
     timer = 0;
     now_run_id = -1;
     finished = 0;
-
 	init(&myque);
     
 	while(1){ //in schedule
-        // fprintf(stderr, "current time: %d\n", timer);
+
+		//fprintf(stderr, "TIMER: %d\n", timer);
+
         // check whether running process is finished.
-        // fprintf(stderr, "%d\n", now_run_id);
         if(now_run_id != -1 && process_list[now_run_id]->exec_time == 0){
-            //finished
             //wait this process
             waitpid(process_list[now_run_id]->pid, NULL, 0);
             
-            //printf("%s: %d finished at time: %d\n", process_list[now_run_id]->name, process_list[now_run_id]->pid, timer);
-            //no one running now.
+            //fprintf(stderr, "%s: %d finished at time: %d\n", process_list[now_run_id]->name, process_list[now_run_id]->pid, timer);
+            
+			//no one running now.
             now_run_id = -1;
             finished++;
             if( finished==n_process )
@@ -235,30 +235,32 @@ int scheduling(PROCESS **process_list, int n_process, int type)
             }
         }
 
-// fprintf(stderr, "two\n");
         
         // if ready time, fork()
         for(int i=0;i<n_process;i++){
             // printf("%d\n", process_list[i]->ready_time);
             if(process_list[i]->ready_time == timer && process_list[i]->pid==-1){
-                // fprintf(stderr, "fork %s\n", process_list[i]->name);
-                push(&myque, i);
+                //fprintf(stderr, "fork %s\n", process_list[i]->name);
+                if(type==RR)
+					push(&myque, i);
 				process_list[i]->pid = run_process(process_list[i]);
                 set_process_block(process_list[i]->pid);
+				
             }
         }
 
-// fprintf(stderr, "three\n");
         // get next process
         int next = next_process(process_list, n_process, type);
         //printf("~next:%d~\n", next);
         if(next!=-1) {
             //change work
             if(now_run_id != next){
-				printf("%d->%d at %d\n", now_run_id, next, timer);
+				//printf("%d->%d at %d\n", now_run_id, next, timer);
                 //higher next pid, lower now pid.
                 set_process_high(process_list[next]->pid);
+				//fprintf(stderr, "set!\n");
 				assign_proc_on_cpu(process_list[next]->pid, CHILD_CPU);
+				
                 if(now_run_id!=-1)
                     set_process_block(process_list[now_run_id]->pid);
                 now_run_id = next;
