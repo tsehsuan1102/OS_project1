@@ -44,7 +44,7 @@ void push(Queue *que, int x){
 int top(Queue *que){
 	//printf("!!%d\n", que->data[que->front]);
 	int tmp = que->data[que->front];
-	printf("%d\n", tmp);	
+	//printf("%d\n", tmp);	
 
 	return tmp;
 }
@@ -91,11 +91,18 @@ int next_process(PROCESS **process_list, int n_process, int type)
         }
     }
 
+
     //Round Robin
     if(type==RR){
 		//queue	
-		//printf("t:%d\n", timer);	
-        if((timer - t_last) % time_slice == 0)  {
+        if(now_run_id==-1){
+			if( size(&myque)>0 ){
+				int nowid = top(&myque); pop(&myque);
+				return nowid;
+			}
+			else return -1;
+		}
+		else if((timer - t_last) % time_slice == 0) {
             //re = (now_run_id+1)%n_process;
             //while (process_list[re]->pid == -1 || process_list[re]->exec_time == 0){
              //   re++;
@@ -104,17 +111,12 @@ int next_process(PROCESS **process_list, int n_process, int type)
                     //a round
                     //if(process_list[re]->exec_time == 0)
                     //    re = -1;
-			printf("sz:%d\n", size(&myque));
+			if( now_run_id!=-1 && process_list[now_run_id]->exec_time > 0 ){
+				push(&myque, now_run_id);
+			}
+
 			if( size(&myque)>0 ){
-			printf("QQ\n");	
-				int nowid = top(&myque); 
-				//fprintf(stderr, "dd: %d\n", top(&myque));
-				pop(&myque);				
-				//fprintf(stderr, "dd: %d\n", top(&myque));
-					
-				if( now_run_id!=-1 && process_list[now_run_id]->exec_time > 0 ){
-					push(&myque, now_run_id);
-				}
+				int nowid = top(&myque); pop(&myque);
 				return nowid;
 			}
 			else{
@@ -122,9 +124,7 @@ int next_process(PROCESS **process_list, int n_process, int type)
 			}
 		}
 		return now_run_id;
-
 		/*
-
         //no one is running
         if(now_run_id==-1){
             for(int i=0;i<n_process;i++){
@@ -150,12 +150,12 @@ int next_process(PROCESS **process_list, int n_process, int type)
         }
         else
             re = now_run_id;
-		
 		//fprintf(stderr, "!!%d\n", re);
 		*/
     }
 
 
+	
     if(type==SJF){
         //if someone is running, then cannot interrupt it.
         if(now_run_id!=-1)
@@ -244,7 +244,6 @@ int scheduling(PROCESS **process_list, int n_process, int type)
                 // fprintf(stderr, "fork %s\n", process_list[i]->name);
                 push(&myque, i);
 				process_list[i]->pid = run_process(process_list[i]);
-                // print("")
                 set_process_block(process_list[i]->pid);
             }
         }
@@ -259,6 +258,7 @@ int scheduling(PROCESS **process_list, int n_process, int type)
 				printf("%d->%d at %d\n", now_run_id, next, timer);
                 //higher next pid, lower now pid.
                 set_process_high(process_list[next]->pid);
+				assign_proc_on_cpu(process_list[next]->pid, CHILD_CPU);
                 if(now_run_id!=-1)
                     set_process_block(process_list[now_run_id]->pid);
                 now_run_id = next;

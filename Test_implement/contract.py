@@ -28,17 +28,6 @@ if __name__ == '__main__':
 		print('|process|start time|end time|expect exec time|my start time|my end time|my exec time|error rate|')
 		print('|- |- |- |- |- |- |- |- |')
 		
-		theoretical = {}
-		if os.path.isdir('theoretical'):
-
-			with open(os.path.join('theoretical', filename), 'r') as f:
-
-				for line in f:
-					
-					if args.print_theoretical == True:
-						print(line.strip())
-					theoretical[line.strip().split(' ')[0]] = int(line.strip().split(' ')[1])
-
 		prefix = filename.split('.')[0]
 		stdout_path = os.path.join(args.output_path, prefix + '_stdout.txt')
 		dmesg_path = os.path.join(args.output_path, prefix + '_dmesg.txt')
@@ -46,11 +35,11 @@ if __name__ == '__main__':
 		theoretical_time = []
 		with open(os.path.join('theoretical-output', prefix + '_stdout.txt'), 'r') as f:
 			for line in f:
-				theoretical_time.append(line.strip()[1:])
+				theoretical_time.append(line.strip())
 		
 		with open(stdout_path, 'r') as f:
-		
-			pid_to_name = {line.strip().split(' ')[1]: line.strip().split(' ')[0] for line in f}
+			#print(line.strip().split()[1])
+			pid_to_name = {line.strip().split(' ')[1]: line.strip().split(' ')[0] for line in f if line.strip()}
 
 		minor = np.inf
 		with open(dmesg_path, 'r') as f:
@@ -64,14 +53,19 @@ if __name__ == '__main__':
 		
 			for line in f:
 				
-				line_list = line.strip().split(' ')
-				name = pid_to_name[line_list[1]]
-				exec_time = float(line_list[3]) - float(line_list[2])
+				if line.strip:
+					line_list = line.strip().split(' ')
+					#print(line_list)
+					#print(pid_to_name)
+					name = pid_to_name[line_list[1]]
+					#print(theoretical[name])
+					exec_time = float(line_list[3]) - float(line_list[2])
+					subtract = float(theoretical_time[count].split()[2]) - float(theoretical_time[count].split()[1])
 
-				print('|%s | %s | %s | %d | %0.2f | %0.2f | %0.2f | %0.2f%%|' % (name, theoretical_time[count].split()[1], theoretical_time[count].split()[2], float(theoretical_time[count].split()[2]) - float(theoretical_time[count].split()[1]), float(round((float(line_list[2]) - minor)/ unit_time, 3)), float(round((float(line_list[3]) - minor)/ unit_time, 3)), round(exec_time / unit_time, 3), 100*np.abs(theoretical[name] - round(exec_time / unit_time, 3)) / (theoretical[name])))
-				count += 1;
-				total += 100*np.abs(theoretical[name] - round(exec_time / unit_time, 3)) / (theoretical[name])
-				number += 1
+					print('|%s | %s | %s | %d | %0.2f | %0.2f | %0.2f | %0.2f%%|' % (name, theoretical_time[count].split()[1], theoretical_time[count].split()[2], float(theoretical_time[count].split()[2]) - float(theoretical_time[count].split()[1]), float(round((float(line_list[2]) - minor)/ unit_time, 3)), float(round((float(line_list[3]) - minor)/ unit_time, 3)), round(exec_time / unit_time, 3), 100*np.abs(subtract - round(exec_time / unit_time, 3)) / (subtract)))
+					count += 1;
+					total += 100*np.abs(subtract - round(exec_time / unit_time, 3)) / (subtract)
+					number += 1
 
 		
 

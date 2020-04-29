@@ -74,12 +74,13 @@ int run_process(PROCESS *now)
     }
     //children
     if(pid==0){
-
         long    start, end;
         struct  timeval    tv;
         struct  timezone   tz;
 
-        char dmesg[200];
+
+		while( sched_getcpu()!=CHILD_CPU );
+
         start = syscall(GETTIME);
 
         // gettimeofday(&tv, &tz);
@@ -102,12 +103,13 @@ int run_process(PROCESS *now)
         //fprintf(stderr, "%s\n", dmesg);
         exit(0);
     }
-    fprintf(stdout, "[%s %d]\n", now->name, pid);
+    fprintf(stdout, "%s %d\n", now->name, pid);
 	fflush(stdout);
     //parent
     //set children process on children CPU
-    assign_proc_on_cpu(pid, CHILD_CPU);
-    return pid;
+    //assign_proc_on_cpu(pid, CHILD_CPU);
+    
+	return pid;
 }
 
 //set low priority
