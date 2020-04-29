@@ -11,7 +11,7 @@
 
 
 //Unit time
-#define UNIT_TIME() { volatile unsigned long i; for(i=0;i<1000UL;i++); } 
+#define UNIT_TIME() { volatile unsigned long i; for(i=0;i<1000000UL;i++); } 
 
 
 typedef struct{

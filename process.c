@@ -30,7 +30,7 @@ void print_process(PROCESS *p){
 
 int assign_proc_on_cpu(pid_t pid, int core)
 {
-	fprintf(stderr, "pid %d\n", pid);
+	//fprintf(stderr, "pid %d\n", pid);
     if(core > 2){
         fprintf(stderr, "Core index error.");
         return -1;
@@ -52,7 +52,7 @@ int assign_proc_on_cpu(pid_t pid, int core)
 int set_process_high(int pid)
 {
     struct sched_param param;
-    param.sched_priority = 99;
+    param.sched_priority = 0;
 
     //SCHED_OTHER
     int ret = sched_setscheduler(pid, SCHED_OTHER, &param);
@@ -77,7 +77,9 @@ int run_process(PROCESS *now)
     if(pid==0){
         long    start, end;
 
-		while( sched_getcpu()!=CHILD_CPU );
+		while( sched_getcpu()!=CHILD_CPU ){
+			//printf("ready!\n");	
+		};
 
         start = syscall(GETTIME);
         for (int i=0;i<now->exec_time;i++) {
@@ -108,7 +110,7 @@ int run_process(PROCESS *now)
 int set_process_block(int pid)
 {
     struct sched_param param;
-    param.sched_priority = 1;
+    param.sched_priority = 0;
 
     //SCHED_OTHER
     int ret = sched_setscheduler(pid, SCHED_IDLE, &param);

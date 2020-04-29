@@ -223,7 +223,7 @@ int scheduling(PROCESS **process_list, int n_process, int type)
             //wait this process
             waitpid(process_list[now_run_id]->pid, NULL, 0);
             
-            //fprintf(stderr, "%s: %d finished at time: %d\n", process_list[now_run_id]->name, process_list[now_run_id]->pid, timer);
+            fprintf(stderr, "%s: %d finished at time: %d\n", process_list[now_run_id]->name, process_list[now_run_id]->pid, timer);
             
 			//no one running now.
             now_run_id = -1;
@@ -255,7 +255,6 @@ int scheduling(PROCESS **process_list, int n_process, int type)
         if(next!=-1) {
             //change work
             if(now_run_id != next){
-				//printf("%d->%d at %d\n", now_run_id, next, timer);
                 //higher next pid, lower now pid.
                 set_process_high(process_list[next]->pid);
 				//fprintf(stderr, "set!\n");
@@ -268,7 +267,6 @@ int scheduling(PROCESS **process_list, int n_process, int type)
             }
         }
 
-// fprintf(stderr, "four\n");
         //run a unit time.
         if (now_run_id != -1)
             process_list[now_run_id]->exec_time--;
