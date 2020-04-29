@@ -25,6 +25,39 @@ static  int     t_last;
 
 
 
+typedef struct queue{
+	int data[20];
+	int front, back;
+}Queue;
+
+void init(Queue *que){
+	que->front = 0;
+	que->back = 0;
+}
+int size(Queue *que){
+	return ((que->back) - (que->front)+20)%20;
+}
+void push(Queue *que, int x){
+	que->data[que->back++] = x;
+	que->back %= 20;
+}
+int top(Queue *que){
+	//printf("!!%d\n", que->data[que->front]);
+	int tmp = que->data[que->front];
+	printf("%d\n", tmp);	
+
+	return tmp;
+}
+void pop(Queue *que){
+	que->front++;
+	que->front %= 20;
+}
+
+
+
+
+
+
 
 #define time_slice 500
 
@@ -35,6 +68,7 @@ void run_FIFO(PROCESS **process_list, int n_process, int type)
     mysort(process_list, n_process);
 }
 
+Queue myque;
 
 //find the next process
 int next_process(PROCESS **process_list, int n_process, int type)
@@ -57,8 +91,40 @@ int next_process(PROCESS **process_list, int n_process, int type)
         }
     }
 
-    //Round Rabin
+    //Round Robin
     if(type==RR){
+		//queue	
+		//printf("t:%d\n", timer);	
+        if((timer - t_last) % time_slice == 0)  {
+            //re = (now_run_id+1)%n_process;
+            //while (process_list[re]->pid == -1 || process_list[re]->exec_time == 0){
+             //   re++;
+             //   re %= n_process;
+             //   if(re == now_run_id){
+                    //a round
+                    //if(process_list[re]->exec_time == 0)
+                    //    re = -1;
+			printf("sz:%d\n", size(&myque));
+			if( size(&myque)>0 ){
+			printf("QQ\n");	
+				int nowid = top(&myque); 
+				//fprintf(stderr, "dd: %d\n", top(&myque));
+				pop(&myque);				
+				//fprintf(stderr, "dd: %d\n", top(&myque));
+					
+				if( now_run_id!=-1 && process_list[now_run_id]->exec_time > 0 ){
+					push(&myque, now_run_id);
+				}
+				return nowid;
+			}
+			else{
+				return -1;
+			}
+		}
+		return now_run_id;
+
+		/*
+
         //no one is running
         if(now_run_id==-1){
             for(int i=0;i<n_process;i++){
@@ -69,22 +135,24 @@ int next_process(PROCESS **process_list, int n_process, int type)
             }
         }
         //
-        else if((timer - t_last) == time_slice)  {
+        else if((timer - t_last) % time_slice == 0)  {
             re = (now_run_id+1)%n_process;
             while (process_list[re]->pid == -1 || process_list[re]->exec_time == 0){
                 re++;
                 re %= n_process;
                 if(re == now_run_id){
                     //a round
-                    if(process_list[re]->exec_time == 0)
-                        re = -1;
+                    //if(process_list[re]->exec_time == 0)
+                    //    re = -1;
                     break;
                 }
             }
         }
         else
             re = now_run_id;
-
+		
+		//fprintf(stderr, "!!%d\n", re);
+		*/
     }
 
 
@@ -145,7 +213,9 @@ int scheduling(PROCESS **process_list, int n_process, int type)
     now_run_id = -1;
     finished = 0;
 
-    while(1){ //in schedule
+	init(&myque);
+    
+	while(1){ //in schedule
         // fprintf(stderr, "current time: %d\n", timer);
         // check whether running process is finished.
         // fprintf(stderr, "%d\n", now_run_id);
@@ -154,7 +224,7 @@ int scheduling(PROCESS **process_list, int n_process, int type)
             //wait this process
             waitpid(process_list[now_run_id]->pid, NULL, 0);
             
-            printf("%s: %d finished at time: %d\n", process_list[now_run_id]->name, process_list[now_run_id]->pid, timer);
+            //printf("%s: %d finished at time: %d\n", process_list[now_run_id]->name, process_list[now_run_id]->pid, timer);
             //no one running now.
             now_run_id = -1;
             finished++;
@@ -170,9 +240,10 @@ int scheduling(PROCESS **process_list, int n_process, int type)
         // if ready time, fork()
         for(int i=0;i<n_process;i++){
             // printf("%d\n", process_list[i]->ready_time);
-            if(process_list[i]->ready_time == timer){
+            if(process_list[i]->ready_time == timer && process_list[i]->pid==-1){
                 // fprintf(stderr, "fork %s\n", process_list[i]->name);
-                process_list[i]->pid = run_process(process_list[i]);
+                push(&myque, i);
+				process_list[i]->pid = run_process(process_list[i]);
                 // print("")
                 set_process_block(process_list[i]->pid);
             }
@@ -181,10 +252,11 @@ int scheduling(PROCESS **process_list, int n_process, int type)
 // fprintf(stderr, "three\n");
         // get next process
         int next = next_process(process_list, n_process, type);
-        printf("~next:%d~\n", next);
+        //printf("~next:%d~\n", next);
         if(next!=-1) {
             //change work
             if(now_run_id != next){
+				printf("%d->%d at %d\n", now_run_id, next, timer);
                 //higher next pid, lower now pid.
                 set_process_high(process_list[next]->pid);
                 if(now_run_id!=-1)

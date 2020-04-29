@@ -24,7 +24,7 @@ void read_process(PROCESS *p){
 
 
 void print_process(PROCESS *p){
-    fprintf(stderr, "%s %d %d\n", p->name, p->ready_time, p->exec_time);
+    //fprintf(stderr, "%s %d %d\n", p->name, p->ready_time, p->exec_time);
 }
 
 
@@ -74,7 +74,6 @@ int run_process(PROCESS *now)
     }
     //children
     if(pid==0){
-        fprintf(stdout, "%s %d\n", now->name, getpid());
 
         long    start, end;
         struct  timeval    tv;
@@ -100,9 +99,11 @@ int run_process(PROCESS *now)
         // sprintf(dmesg, "[project1]%s %d %lld.%09lld %lld.%09lld\n", now->name, getpid(), start_sec, start_nsec, end_sec, end_nsec);
         syscall(PRINTK, getpid(), start, end);
 
-        fprintf(stderr, "%s\n", dmesg);
+        //fprintf(stderr, "%s\n", dmesg);
         exit(0);
     }
+    fprintf(stdout, "[%s %d]\n", now->name, pid);
+	fflush(stdout);
     //parent
     //set children process on children CPU
     assign_proc_on_cpu(pid, CHILD_CPU);
